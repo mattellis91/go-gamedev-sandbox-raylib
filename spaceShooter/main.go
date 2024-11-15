@@ -20,7 +20,9 @@ type Entity struct {
 var (
 	player *Entity
 	starPositions []rl.Vector2
+	metorPositions []rl.Vector2
 	starTexture rl.Texture2D
+	meteorTexture rl.Texture2D
 )
 
 var (
@@ -44,6 +46,10 @@ func init() {
 		starPositions = append(starPositions, randomPos())
 	}
 
+	//meteors
+	meteorTexture = rl.LoadTexture(filepath.Join("resources", "images", "meteor.png"))
+	metorPositions = append(metorPositions, randomPos())
+
 }
 
 func randomPos() rl.Vector2 {
@@ -58,7 +64,11 @@ func input() {
 
 func update() {
 	running = !rl.WindowShouldClose()
-
+	if player.Pos.X < SCREEN_WIDTH {
+		player.Pos.X += 5
+	} else if player.Pos.X >= SCREEN_WIDTH {
+		player.Pos.X = 0
+	}
 }
 
 func draw() {
@@ -67,6 +77,10 @@ func draw() {
 	
 	for _, pos := range starPositions {
 		rl.DrawTexture(starTexture, int32(pos.X), int32(pos.Y), rl.White)
+	}
+
+	for _, pos := range metorPositions {
+		rl.DrawTexture(meteorTexture, int32(pos.X), int32(pos.Y), rl.White)
 	}
 
 	rl.DrawTexture(player.Tex, int32(player.Pos.X), int32(player.Pos.Y), rl.White)	
