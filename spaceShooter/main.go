@@ -64,10 +64,33 @@ func input() {
 
 func update() {
 	running = !rl.WindowShouldClose()
-	if player.Pos.X < SCREEN_WIDTH {
+
+	//movement
+	if rl.IsKeyDown(rl.KeyA) {
+		player.Pos.X -= 5
+	}
+	if rl.IsKeyDown(rl.KeyD) {
 		player.Pos.X += 5
-	} else if player.Pos.X >= SCREEN_WIDTH {
+	}
+	if rl.IsKeyDown(rl.KeyW) {
+		player.Pos.Y -= 5
+	}
+	if rl.IsKeyDown(rl.KeyS) {
+		player.Pos.Y += 5
+	}
+
+	//screen wrap
+	if  player.Pos.X >= SCREEN_WIDTH {
 		player.Pos.X = 0
+	}
+	if player.Pos.X + float32(player.Tex.Width) <= 0 {
+		player.Pos.X = SCREEN_WIDTH - float32(player.Tex.Width)
+	}
+	if player.Pos.Y < 0 {
+		player.Pos.Y = SCREEN_HEIGHT
+	}
+	if player.Pos.Y > SCREEN_HEIGHT {
+		player.Pos.Y = 0
 	}
 }
 
