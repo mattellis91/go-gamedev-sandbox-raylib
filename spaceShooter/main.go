@@ -10,6 +10,7 @@ import (
 const (
 	SCREEN_WIDTH  = 1280
 	SCREEN_HEIGHT = 720
+	TARGET_FPS = 60
 )
 
 type Entity struct {
@@ -23,6 +24,7 @@ var (
 	metorPositions []rl.Vector2
 	starTexture rl.Texture2D
 	meteorTexture rl.Texture2D
+	paused bool
 )
 
 var (
@@ -59,38 +61,43 @@ func randomPos() rl.Vector2 {
 }
 
 func input() {
-
 }
 
 func update() {
 	running = !rl.WindowShouldClose()
 
-	//movement
-	if rl.IsKeyDown(rl.KeyA) {
-		player.Pos.X -= 5
-	}
-	if rl.IsKeyDown(rl.KeyD) {
-		player.Pos.X += 5
-	}
-	if rl.IsKeyDown(rl.KeyW) {
-		player.Pos.Y -= 5
-	}
-	if rl.IsKeyDown(rl.KeyS) {
-		player.Pos.Y += 5
+	if rl.IsKeyPressed(rl.KeyEscape) {
+		paused = !paused
 	}
 
-	//screen wrap
-	if  player.Pos.X >= SCREEN_WIDTH {
-		player.Pos.X = 0
-	}
-	if player.Pos.X + float32(player.Tex.Width) <= 0 {
-		player.Pos.X = SCREEN_WIDTH - float32(player.Tex.Width)
-	}
-	if player.Pos.Y < 0 {
-		player.Pos.Y = SCREEN_HEIGHT
-	}
-	if player.Pos.Y > SCREEN_HEIGHT {
-		player.Pos.Y = 0
+	if !paused {
+		//movement
+		if rl.IsKeyDown(rl.KeyA) {
+			player.Pos.X -= 5
+		}
+		if rl.IsKeyDown(rl.KeyD) {
+			player.Pos.X += 5
+		}
+		if rl.IsKeyDown(rl.KeyW) {
+			player.Pos.Y -= 5
+		}
+		if rl.IsKeyDown(rl.KeyS) {
+			player.Pos.Y += 5
+		}
+
+		//screen wrap
+		if  player.Pos.X >= SCREEN_WIDTH {
+			player.Pos.X = 0
+		}
+		if player.Pos.X + float32(player.Tex.Width) <= 0 {
+			player.Pos.X = SCREEN_WIDTH - float32(player.Tex.Width)
+		}
+		if player.Pos.Y < 0 {
+			player.Pos.Y = SCREEN_HEIGHT
+		}
+		if player.Pos.Y > SCREEN_HEIGHT {
+			player.Pos.Y = 0
+		}
 	}
 }
 
@@ -107,15 +114,24 @@ func draw() {
 	}
 
 	rl.DrawTexture(player.Tex, int32(player.Pos.X), int32(player.Pos.Y), rl.White)	
+
+	if paused {
+		rl.DrawText("PAUSED", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 20, rl.White)
+	}
 		
 	rl.EndDrawing()
 }
 
 func quit() {
+	rl.UnloadTexture(starTexture)
+	rl.UnloadTexture(player.Tex)
+	rl.UnloadTexture(meteorTexture)
 	rl.CloseWindow()
 }
 
 func main() {
+
+	rl.SetTargetFPS(TARGET_FPS);
 
 	for running {
 		input()
